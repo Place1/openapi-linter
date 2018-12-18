@@ -48,4 +48,7 @@ for ARTIFACT in "${ARTIFACTS[@]}"; do
     --file "./$ARTIFACT"
 done
 
+echo "updating docs"
+(cd docs && mkdocs gh-deploy)
+
 echo "done"
