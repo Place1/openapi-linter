@@ -1,7 +1,7 @@
 package main
 
 import (
-	"openapilinter/linter"
+	"github.com/place1/openapi-linter/linter"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )

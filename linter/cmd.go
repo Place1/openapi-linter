@@ -2,8 +2,9 @@ package linter
 
 import (
 	"log"
-	"openapilinter/core"
 	"sync"
+
+	"github.com/place1/openapi-linter/core"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/strfmt"

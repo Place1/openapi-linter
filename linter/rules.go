@@ -1,11 +1,12 @@
 package linter
 
 import (
-	"openapilinter/core"
-	"openapilinter/utils"
 	"path"
 	"strconv"
 	"strings"
+
+	"github.com/place1/openapi-linter/core"
+	"github.com/place1/openapi-linter/utils"
 
 	"github.com/go-openapi/spec"
 	"github.com/sirupsen/logrus"
