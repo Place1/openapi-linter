@@ -3,6 +3,7 @@ site_author: James Batt
 repo_name: GitHub
 repo_url: https://github.com/place1/openapi-linter
 docs_dir: ./pages
+edit_uri: edit/master/docs/pages/
 
 theme:
   name: material
