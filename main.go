@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	spec = kingpin.Arg("openapi-spec", "the path to an openapi spec yaml file").Required().String()
+	spec   = kingpin.Arg("openapi-spec", "a path to an openapi yaml spec").Required().String()
+	config = kingpin.Flag("config", "a path to a config file").Default("openapi-linter.yaml").String()
 )
 
 func main() {

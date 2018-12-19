@@ -9,15 +9,18 @@ theme:
   name: material
   include_sidebar: true
   palette:
-    primary: cyan
-    accent: cyan
+    primary: teal
+    accent: teal
   feature:
     tabs: false
 
 markdown_extensions:
   - admonition
+  - pymdownx.details
+  - pymdownx.superfences
   - toc:
       permalink: true
 
 nav:
   - Getting Started: index.md
+  - Rules: rules.md

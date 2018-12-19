@@ -1,0 +1,12 @@
+rules:
+  noEmptyOperationIDs: true
+  noEmptyDescriptions:
+    operations: true
+    parameters: true
+    properties: false
+  naming:
+    tags: PascalCase
+    Definitions: PascalCase
+    Properties: CamelCase
+    Parameters: SnakeCase
+    Paths: KebabCase

@@ -1,4 +1,0 @@
-presets:
-  - standard
-rules:
-  noEmptyDescriptions: {}

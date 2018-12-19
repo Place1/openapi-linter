@@ -1,17 +1,44 @@
-# Welcome to MkDocs
+# Getting Started
 
-For full documentation visit [mkdocs.org](https://mkdocs.org).
+## Installation
 
-## Commands
+**[Download - Github Releases Page](https://github.com/Place1/openapi-linter/releases)**
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs help` - Print this help message.
+OpenAPI Linter is a single executable binary. You can download the latest release for your platform from the Github Releases page linked above.
 
-## Project layout
+Or you can build it from source:
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+```bash
+git clone https://github.com/place1/openapi-linter
+cd openapi-linter
+go build
+./openapi-linter --help
+```
+
+## Quickstart
+
+Once you've got the binary (make sure it's on your `$PATH`) you can use it like this:
+
+```bash
+openapi-linter ./path/to/openapi.yaml
+```
+
+By default `openapi-linter` will look for a config file in the current directory called `openapi-linter.yaml`.
+Here's an example config file with some comments:
+
+```yaml
+# openapi-linter.yaml
+rules:
+  noEmptyOperationIDs: true  # make sure all operations have an ID
+  noEmptyDescriptions:
+    operations: true         # operations must have descriptions
+    parameters: true         # parameters must have descriptions
+    properties: false        # properties may omit the description field
+  naming:                    # naming conventions for different components of the spec
+    paths: KebabCase
+    tags: PascalCase
+    operation: CamelCase
+    parameters: SnakeCase
+```
+
+**[See Rules Docs](./rules)**

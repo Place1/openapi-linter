@@ -13,11 +13,17 @@ import (
 )
 
 type Options struct {
-	Spec string
+	Spec   string
+	Config string
 }
 
 func RunSpecLint(options Options) {
 	document, err := loads.Spec(options.Spec)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	_, err = LoadConfig(options.Config)
 	if err != nil {
 		log.Fatalln(err)
 	}
