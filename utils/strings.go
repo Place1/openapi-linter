@@ -12,10 +12,10 @@ func ContainsUpperChars(input string) bool {
 }
 
 var (
-	pascalCaseRE = regexp.MustCompile("^[A-Z][a-z]+(?:[A-Z][a-z]+)*$")
-	camelCaseRE  = regexp.MustCompile("^[a-z]+(?:[A-Z][a-z]+)*$")
-	snakeCaseRE  = regexp.MustCompile("^[a-z]+(_[a-z]+)*$")
-	kebabCaseRE  = regexp.MustCompile("^[a-z]+(-[a-z]+)*$")
+	pascalCaseRE = regexp.MustCompile("^[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)*$")
+	camelCaseRE  = regexp.MustCompile("^[a-z][a-z0-9]+(?:[A-Z0-9]+[a-z0-9]*)*$")
+	snakeCaseRE  = regexp.MustCompile("^[a-z]+(_[a-z0-9]+)*$")
+	kebabCaseRE  = regexp.MustCompile("^[a-z]+(-[a-z0-9]+)*$")
 )
 
 func IsPascalCase(input string) bool {

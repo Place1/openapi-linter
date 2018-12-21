@@ -41,7 +41,7 @@ paths:
             $ref: '#/definitions/Error'
     post:
       summary: Create a pet
-      operationId: createPets
+      operationId: listPets
       tags:
         - pets
       parameters:
@@ -81,12 +81,12 @@ definitions:
   Pet:
     required:
       - id
-      - name
+      - Name
     properties:
       id:
         type: integer
         format: int64
-      name:
+      Name:
         type: string
       tag:
         type: string

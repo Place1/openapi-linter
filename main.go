@@ -14,6 +14,7 @@ var (
 func main() {
 	kingpin.Parse()
 	linter.RunSpecLint(linter.Options{
-		Spec: *spec,
+		Spec:   *spec,
+		Config: *config,
 	})
 }

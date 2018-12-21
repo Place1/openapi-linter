@@ -2,14 +2,11 @@ package linter
 
 import (
 	"log"
-	"sync"
+	"os"
 
-	"github.com/place1/openapi-linter/core"
-
+	"github.com/go-openapi/analysis"
 	"github.com/go-openapi/loads"
-	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/validate"
-	"github.com/sirupsen/logrus"
+	"github.com/place1/openapi-linter/core"
 )
 
 type Options struct {
@@ -23,40 +20,37 @@ func RunSpecLint(options Options) {
 		log.Fatalln(err)
 	}
 
-	_, err = LoadConfig(options.Config)
+	config, err := LoadConfig(options.Config)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	var wg sync.WaitGroup
+	ctx := &RuleContext{
+		Config:   *config,
+		Report:   *NewReport(),
+		Analyzer: *analysis.New(document.Spec()),
+		Walk: func(visitor core.DocumentVisitor) {
+			core.Walk(document, core.NodeData{}, visitor)
+		},
+	}
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		core.Walk(document, core.NodeData{}, OperationTagNamingConvention(KebabCase))
-		core.Walk(document, core.NodeData{}, RequireOperationTags())
-		core.Walk(document, core.NodeData{}, PathNamingConvention(KebabCase))
-		core.Walk(document, core.NodeData{}, ParameterNamingConvention(KebabCase))
-		core.Walk(document, core.NodeData{}, DefinitionNamingConvention(KebabCase))
-		core.Walk(document, core.NodeData{}, PropertyNamingConvention(KebabCase))
-		core.Walk(document, core.NodeData{}, NoEmptyOperationID())
-		core.Walk(document, core.NodeData{}, NoEmptyDescriptions())
-		core.Walk(document, core.NodeData{}, SlashTerminatedPaths())
-	}()
+	Naming(ctx)
+	RequireOperationTags(ctx)
+	NoEmptyOperationID(ctx)
+	NoEmptyDescriptions(ctx)
+	SlashTerminatedPaths(ctx)
+	NoUnusedDefinitions(ctx)
+	NoDuplicateOperationIDs(ctx)
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		validator := validate.NewSpecValidator(document.Schema(), strfmt.Default)
-		validator.SetContinueOnErrors(true)
-		result, _ := validator.Validate(document)
-		for _, specError := range result.Errors {
-			logrus.Error(specError.Error())
-		}
-		for _, warning := range result.Warnings {
-			logrus.Warn(warning.Error())
-		}
-	}()
+	// validator := validate.NewSpecValidator(document.Schema(), strfmt.Default)
+	// validator.SetContinueOnErrors(true)
+	// result, _ := validator.Validate(document)
+	// for _, specError := range result.Errors {
+	// 	logrus.Error(specError.Error())
+	// }
+	// for _, warning := range result.Warnings {
+	// 	logrus.Warn(warning.Error())
+	// }
 
-	wg.Wait()
+	ConsoleFormatter(os.Stdout, ctx.Report)
 }

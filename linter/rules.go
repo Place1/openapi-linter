@@ -1,6 +1,7 @@
 package linter
 
 import (
+	"fmt"
 	"path"
 	"strconv"
 	"strings"
@@ -8,41 +9,70 @@ import (
 	"github.com/place1/openapi-linter/core"
 	"github.com/place1/openapi-linter/utils"
 
+	"github.com/go-openapi/analysis"
+	"github.com/go-openapi/jsonpointer"
 	"github.com/go-openapi/spec"
-	"github.com/sirupsen/logrus"
 )
 
-func NoEmptyDescriptions() core.DocumentVisitor {
-	return func(node interface{}, data core.NodeData) {
+type RuleContext struct {
+	Config   Config
+	Analyzer analysis.Spec
+	Report   Report
+	Walk     func(visitor core.DocumentVisitor)
+}
+
+func NoEmptyDescriptions(ctx *RuleContext) {
+	if ctx.Config.Rules.NoEmptyDescriptions == nil {
+		return
+	}
+
+	ctx.Walk(func(node interface{}, data core.NodeData) {
 		switch node := node.(type) {
 		case *spec.Operation:
 			if node.Description == "" {
-				logrus.Warnf(`operation "%v" must have a description`, data.Ref)
+				ctx.Report.AddViolation(RuleViolation{
+					RuleName: "",
+					Failure:  fmt.Sprintf(`operation "%v" must have a description`, data.Ref),
+				})
 			}
 		}
-	}
+	})
 }
 
-func NoEmptyOperationID() core.DocumentVisitor {
-	return func(node interface{}, data core.NodeData) {
+func NoEmptyOperationID(ctx *RuleContext) {
+	if ctx.Config.Rules.NoEmptyOperationIDs == false {
+		return
+	}
+
+	ctx.Walk(func(node interface{}, data core.NodeData) {
 		switch node := node.(type) {
 		case *spec.Operation:
 			if node.ID == "" {
-				logrus.Warnf(`operation "%v" must have an operationId`, data.Ref)
+				ctx.Report.AddViolation(RuleViolation{
+					RuleName: "",
+					Failure:  fmt.Sprintf(`operation "%v" must have an operationId`, data.Ref),
+				})
 			}
 		}
-	}
+	})
 }
 
-func SlashTerminatedPaths() core.DocumentVisitor {
-	return func(node interface{}, data core.NodeData) {
+func SlashTerminatedPaths(ctx *RuleContext) {
+	if ctx.Config.Rules.SlashTerminatedPaths == nil {
+		return
+	}
+
+	ctx.Walk(func(node interface{}, data core.NodeData) {
 		switch node.(type) {
 		case *spec.PathItem:
-			if !strings.HasSuffix(data.Key, "/") {
-				logrus.Warnf(`path "%v" must end with a slash`, data.Ref)
+			if *ctx.Config.Rules.SlashTerminatedPaths && strings.HasSuffix(data.Key, "/") {
+				ctx.Report.AddViolation(RuleViolation{
+					RuleName: "",
+					Failure:  fmt.Sprintf(`path "%v" must end with a slash`, data.Ref),
+				})
 			}
 		}
-	}
+	})
 }
 
 type NamingConvention = string
@@ -69,86 +99,160 @@ func GetNamingChecker(convention NamingConvention) func(string) bool {
 	return checker
 }
 
-func PathNamingConvention(convention NamingConvention) core.DocumentVisitor {
-	checker := GetNamingChecker(convention)
-	return func(node interface{}, data core.NodeData) {
-		switch node.(type) {
+func Naming(ctx *RuleContext) {
+	if ctx.Config.Rules.Naming == nil {
+		return
+	}
+
+	ctx.Walk(func(node interface{}, data core.NodeData) {
+		switch node := node.(type) {
 		case *spec.PathItem:
-			for _, segment := range strings.Split(data.Key, "/") {
-				if segment != "" && !checker(segment) {
-					logrus.Warnf(`path "%v" must follow the %v naming convention`, data.Ref, convention)
-				}
-			}
-		}
-	}
-}
-
-func DefinitionNamingConvention(convention NamingConvention) core.DocumentVisitor {
-	checker := GetNamingChecker(convention)
-	return func(node interface{}, data core.NodeData) {
-		switch node := node.(type) {
-		case *spec.Definitions:
-			for name := range *node {
-				if !checker(name) {
-					logrus.Warnf(`definition "%v" must follow the %v naming convention`, path.Join(data.Ref, name), convention)
-				}
-			}
-		}
-	}
-}
-
-func PropertyNamingConvention(convention NamingConvention) core.DocumentVisitor {
-	checker := GetNamingChecker(convention)
-	return func(node interface{}, data core.NodeData) {
-		switch node := node.(type) {
-		case *spec.Definitions:
-			for name, schema := range *node {
-				core.Walk(&schema, core.NodeData{Ref: path.Join(data.Ref, name)}, func(node interface{}, data core.NodeData) {
-					switch node.(type) {
-					case *spec.Schema:
-						if !checker(data.Key) {
-							logrus.Warnf(`property "%v" must follow the %v naming convention`, data.Ref, convention)
-						}
+			if ctx.Config.Rules.Naming.Paths != "" {
+				checker := GetNamingChecker(ctx.Config.Rules.Naming.Paths)
+				pathSegments := strings.Split(data.Key, "/")
+				for _, segment := range pathSegments {
+					if segment != "" && !checker(segment) {
+						ctx.Report.AddViolation(RuleViolation{
+							RuleName: "",
+							Failure:  fmt.Sprintf(`path "%v" must follow the %v naming convention`, data.Key, ctx.Config.Rules.Naming.Paths),
+						})
 					}
-				})
+				}
 			}
-		}
-	}
-}
 
-func ParameterNamingConvention(convention NamingConvention) core.DocumentVisitor {
-	checker := GetNamingChecker(convention)
-	return func(node interface{}, data core.NodeData) {
-		switch node := node.(type) {
+		case *spec.Definitions:
+			if ctx.Config.Rules.Naming.Definitions != "" {
+				checker := GetNamingChecker(ctx.Config.Rules.Naming.Definitions)
+				for name := range *node {
+					if !checker(name) {
+						ctx.Report.AddViolation(RuleViolation{
+							RuleName: "",
+							Failure:  fmt.Sprintf(`definition "%v" must follow the %v naming convention`, name, ctx.Config.Rules.Naming.Definitions),
+						})
+					}
+				}
+			}
+
+		case *spec.Schema:
+			if ctx.Config.Rules.Naming.Properties != "" {
+				checker := GetNamingChecker(ctx.Config.Rules.Naming.Properties)
+				for name := range node.Properties {
+					if !checker(name) {
+						ctx.Report.AddViolation(RuleViolation{
+							RuleName: "Naming.Properties",
+							Failure:  fmt.Sprintf(`property "%v" must follow the %v naming convention`, name, ctx.Config.Rules.Naming.Properties),
+						})
+					}
+				}
+			}
+
 		case *spec.Parameter:
-			if !checker(node.Name) {
-				logrus.Warnf(`property "%v" must follow the %v naming convention`, data.Ref, convention)
+			if ctx.Config.Rules.Naming.Parameters != "" {
+				checker := GetNamingChecker(ctx.Config.Rules.Naming.Parameters)
+				if !checker(node.Name) {
+					ctx.Report.AddViolation(RuleViolation{
+						RuleName: "",
+						Failure:  fmt.Sprintf(`parameter "%v" must follow the %v naming convention`, data.Ref, ctx.Config.Rules.Naming.Parameters),
+					})
+				}
 			}
-		}
-	}
-}
 
-func OperationTagNamingConvention(convention NamingConvention) core.DocumentVisitor {
-	checker := GetNamingChecker(convention)
-	return func(node interface{}, data core.NodeData) {
-		switch node := node.(type) {
 		case *spec.Operation:
-			for i, tag := range node.Tags {
-				if !checker(tag) {
-					logrus.Warnf(`operation tag "%v" must follow the %v naming convention`, path.Join(data.Ref, strconv.Itoa(i)), convention)
+			if ctx.Config.Rules.Naming.Operations != "" {
+				checker := GetNamingChecker(ctx.Config.Rules.Naming.Operations)
+				if !checker(node.ID) {
+					ctx.Report.AddViolation(RuleViolation{
+						RuleName: "",
+						Failure:  fmt.Sprintf(`operation with id "%v" must follow the %v naming convention`, node.ID, ctx.Config.Rules.Naming.Operations),
+					})
+				}
+			}
+
+			if ctx.Config.Rules.Naming.Tags != "" {
+				checker := GetNamingChecker(ctx.Config.Rules.Naming.Tags)
+				for i, tag := range node.Tags {
+					if !checker(tag) {
+						ctx.Report.AddViolation(RuleViolation{
+							RuleName: "",
+							Failure:  fmt.Sprintf(`operation tag "%v" must follow the %v naming convention`, path.Join(data.Ref, strconv.Itoa(i)), ctx.Config.Rules.Naming.Tags),
+						})
+					}
 				}
 			}
 		}
-	}
+	})
 }
 
-func RequireOperationTags() core.DocumentVisitor {
-	return func(node interface{}, data core.NodeData) {
+func RequireOperationTags(ctx *RuleContext) {
+	if ctx.Config.Rules.NoEmptyTags == false {
+		return
+	}
+	ctx.Walk(func(node interface{}, data core.NodeData) {
 		switch node := node.(type) {
 		case *spec.Operation:
 			if len(node.Tags) == 0 {
-				logrus.Warnf(`operation "%v" must have at least 1 tag`, data.Ref)
+				ctx.Report.AddViolation(RuleViolation{
+					RuleName: "",
+					Failure:  fmt.Sprintf(`operation "%v" must have at least 1 tag`, data.Ref),
+				})
 			}
 		}
+	})
+}
+
+func NoUnusedDefinitions(ctx *RuleContext) {
+	if ctx.Config.Rules.NoUnusedDefinitions == false {
+		return
 	}
+
+	expected := map[string]bool{}
+	references := ctx.Analyzer.AllDefinitionReferences()
+
+	ctx.Walk(func(node interface{}, data core.NodeData) {
+		switch node := node.(type) {
+		case *spec.Definitions:
+			for name := range *node {
+				expected["#/definitions/"+jsonpointer.Escape(name)] = true
+			}
+
+			for _, name := range references {
+				if _, ok := expected[name]; ok {
+					delete(expected, name)
+				}
+			}
+
+			for name := range expected {
+				ctx.Report.AddViolation(RuleViolation{
+					RuleName: "NoUnusedDefinitions",
+					Failure:  fmt.Sprintf("definition %v is unused", name),
+				})
+			}
+		}
+	})
+}
+
+func NoDuplicateOperationIDs(ctx *RuleContext) {
+	if ctx.Config.Rules.NoDuplicateOperationIDs == false {
+		return
+	}
+
+	existing := map[string]bool{}
+
+	ctx.Walk(func(node interface{}, data core.NodeData) {
+		switch node := node.(type) {
+		case *spec.Operation:
+			if node.ID != "" {
+				if _, ok := existing[node.ID]; !ok {
+					// first time seeing this operation id
+					existing[node.ID] = true
+				} else {
+					// we've already seen it, it's a duplicate
+					ctx.Report.AddViolation(RuleViolation{
+						RuleName: "NoDuplicateOperationIDs",
+						Failure:  fmt.Sprintf("operation id \"%v\" is a duplicate", node.ID),
+					})
+				}
+			}
+		}
+	})
 }

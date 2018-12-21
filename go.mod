@@ -5,8 +5,9 @@ require (
 	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc // indirect
 	github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/fatih/color v1.7.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8 // indirect
-	github.com/go-openapi/analysis v0.17.2 // indirect
+	github.com/go-openapi/analysis v0.17.2
 	github.com/go-openapi/errors v0.17.2 // indirect
 	github.com/go-openapi/jsonpointer v0.17.2
 	github.com/go-openapi/jsonreference v0.17.2 // indirect
@@ -18,6 +19,8 @@ require (
 	github.com/go-openapi/validate v0.17.2
 	github.com/google/uuid v1.1.0 // indirect
 	github.com/imdario/mergo v0.3.6
+	github.com/mattn/go-colorable v0.0.9 // indirect
+	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/pkg/errors v0.8.0
 	github.com/sirupsen/logrus v1.2.0
 	github.com/stretchr/testify v1.2.2

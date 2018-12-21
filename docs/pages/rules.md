@@ -126,3 +126,76 @@
               tags: []
               ...
         ```
+
+??? tip "noUnusedDefinitions"
+
+    Disallows definitions that aren't used anywhere
+
+    !!! example
+
+        ```yaml
+        rules:
+          noUnusedDefinitions: true
+        ```
+
+    !!! success "Good"
+
+        ```yaml
+        paths:
+          /pets/:
+            responses:
+              200:
+                schema:
+                  $ref: '#/definitions/User'
+
+        definitions:
+          User:
+            type: object
+              ...
+        ```
+
+    !!! error "Bad"
+
+        ```yaml
+        paths:
+          /pets/:
+            responses:
+              200:
+                schema:
+                  type: object
+
+        definitions:
+          User:
+            type: object
+        ```
+
+??? tip "noDuplicateOperationIDs"
+
+    Disallows duplicate operation IDs.
+
+    !!! example
+
+        ```yaml
+        rules:
+          noDuplicateOperationIDs: true
+        ```
+
+    !!! success "Good"
+
+        ```yaml
+        paths:
+          /pets/:
+            operationId: listPets
+          /pets/{id}/:
+            operationId: getPet
+        ```
+
+    !!! error "Bad"
+
+        ```yaml
+        paths:
+          /pets/:
+            operationId: listPets
+          /pets/{id}/:
+            operationId: listPets
+        ```
