@@ -1,14 +1,14 @@
 rules:
-  # noEmptyOperationIDs: true
+  noEmptyOperationIDs: true
   noUnusedDefinitions: true
   noDuplicateOperationIDs: true
-  # noEmptyDescriptions:
-  #   operations: true
-  #   parameters: true
-  #   properties: false
+  noEmptyDescriptions:
+    operations: true
+    parameters: true
+    properties: false
   naming:
-    # tags: PascalCase
-    # definitions: PascalCase
+    tags: PascalCase
+    definitions: PascalCase
     properties: CamelCase
-    # parameters: SnakeCase
-    # paths: KebabCase
+    parameters: SnakeCase
+    paths: KebabCase

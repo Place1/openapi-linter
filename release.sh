@@ -16,6 +16,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR"
 
 read -p 'GitHub Username: ' USERNAME
+
+echo "The current release is: $(git tag --list | head -n 1)"
 read -p 'Tag (e.g. v1.0.0): ' TAG
 
 echo "building..."
