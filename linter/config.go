@@ -27,13 +27,14 @@ type Config struct {
 }
 
 type Rules struct {
-	Naming                  *NamingOpts              `yaml:"naming,omitempty"`
-	NoEmptyDescriptions     *NoEmptyDescriptionsOpts `yaml:"noEmptyDescriptions,omitempty"`
-	NoEmptyOperationIDs     bool                     `yaml:"noEmptyOperationIDs,omitempty"`
-	SlashTerminatedPaths    *bool                    `yaml:"slashTerminatedPaths,omitempty"`
-	NoEmptyTags             bool                     `yaml:"noEmptyTags,omitempty"`
-	NoUnusedDefinitions     bool                     `yaml:"noUnusedDefinitions,omitempty"`
-	NoDuplicateOperationIDs bool                     `yaml:"noDuplicateOperationIDs,omitempty"`
+	Naming                      *NamingOpts              `yaml:"naming,omitempty"`
+	NoEmptyDescriptions         *NoEmptyDescriptionsOpts `yaml:"noEmptyDescriptions,omitempty"`
+	NoEmptyOperationIDs         bool                     `yaml:"noEmptyOperationIDs,omitempty"`
+	SlashTerminatedPaths        *bool                    `yaml:"slashTerminatedPaths,omitempty"`
+	NoEmptyTags                 bool                     `yaml:"noEmptyTags,omitempty"`
+	NoUnusedDefinitions         bool                     `yaml:"noUnusedDefinitions,omitempty"`
+	NoDuplicateOperationIDs     bool                     `yaml:"noDuplicateOperationIDs,omitempty"`
+	NoMissingRequiredProperties bool                     `yaml:"noMissingRequiredProperties,omitempty"`
 }
 
 type NoEmptyDescriptionsOpts struct {

@@ -1,10 +1,8 @@
 # OpenAPI Linter
 
-## [Documentation](https://place1.github.io/openapi-linter/)
-
 A simple linter for openapi (swagger) specs.
 
-# Getting Started
+**[Documentation](https://place1.github.io/openapi-linter/)**
 
 ## Installation
 
@@ -50,3 +48,37 @@ rules:
 You can also use the `--config <file>` flag to specify a different file.
 
 **[See Rules Docs](https://place1.github.io/openapi-linter/rules/)**
+
+## Contributing
+
+If you find this project useful please consider contributing back!
+
+If you have a new features (i.e. new rules) or you've encountered a bug
+that you'd like to fix then please create a GitHub issue 😃.
+
+### Building & Test
+```bash
+# Build
+go build ./main.go
+
+# Test
+go test ./...
+
+# Create release binaries
+make
+
+# Cleanup
+make clean
+```
+
+### Build & Serve Docs
+```bash
+cd docs
+pip install -r requirements.txt
+
+# Serve on localhost:8000 (for development)
+mkdocs serve
+
+# Build static docs site
+mkdocs build
+```

@@ -256,3 +256,23 @@ func NoDuplicateOperationIDs(ctx *RuleContext) {
 		}
 	})
 }
+
+func NoMissingRequiredProperties(ctx *RuleContext) {
+	if ctx.Config.Rules.NoMissingRequiredProperties == false {
+		return
+	}
+
+	ctx.Walk(func(node interface{}, data core.NodeData) {
+		switch node := node.(type) {
+		case *spec.Schema:
+			for _, requiredProperty := range node.Required {
+				if _, ok := node.Properties[requiredProperty]; !ok {
+					ctx.Report.AddViolation(RuleViolation{
+						RuleName: "NoMissingRequiredProperties",
+						Failure:  fmt.Sprintf("property \"%v\" is listed as required but is not defined under \"properties\"", requiredProperty),
+					})
+				}
+			}
+		}
+	})
+}

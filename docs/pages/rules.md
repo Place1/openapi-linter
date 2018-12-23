@@ -199,3 +199,45 @@
           /pets/{id}/:
             operationId: listPets
         ```
+
+??? tip "noMissingRequiredProperties"
+
+    Disallows properties from being listed as "required" without
+    being defined under "properties" of a schema.
+
+    !!! example
+
+        ```yaml
+        rules:
+          noMissingRequiredProperties: true
+        ```
+
+    !!! success "Good"
+
+        ```yaml
+        definitions:
+          User:
+            type: object
+            required:
+              - id
+              - username
+            properties:
+              id:
+                type: string
+              username:
+                type: string
+        ```
+
+    !!! error "Bad"
+
+        ```yaml
+        definitions:
+          User:
+            type: object
+            required:
+              - id
+              - username
+            properties:
+              username:
+                type: string
+        ```
