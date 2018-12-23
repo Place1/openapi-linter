@@ -271,9 +271,43 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#documentation" title="Documentation" class="md-nav__link">
-    Documentation
+  <a href="#installation" title="Installation" class="md-nav__link">
+    Installation
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" title="Quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" title="Contributing" class="md-nav__link">
+    Contributing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-test" title="Building &amp; Test" class="md-nav__link">
+    Building &amp; Test
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-serve-docs" title="Build &amp; Serve Docs" class="md-nav__link">
+    Build &amp; Serve Docs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -321,9 +355,43 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#documentation" title="Documentation" class="md-nav__link">
-    Documentation
+  <a href="#installation" title="Installation" class="md-nav__link">
+    Installation
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart" title="Quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" title="Contributing" class="md-nav__link">
+    Contributing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-test" title="Building &amp; Test" class="md-nav__link">
+    Building &amp; Test
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-serve-docs" title="Build &amp; Serve Docs" class="md-nav__link">
+    Build &amp; Serve Docs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -347,9 +415,8 @@
                 
                 
                 <h1 id="openapi-linter">OpenAPI Linter<a class="headerlink" href="#openapi-linter" title="Permanent link">&para;</a></h1>
-<h2 id="documentation"><a href="https://place1.github.io/openapi-linter/">Documentation</a><a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <p>A simple linter for openapi (swagger) specs.</p>
-<h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
+<p><strong><a href="https://place1.github.io/openapi-linter/">Documentation</a></strong></p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p><strong><a href="https://github.com/Place1/openapi-linter/releases">Download - Github Releases Page</a></strong></p>
 <p>OpenAPI Linter is a single executable binary. You can download the latest release for your platform from the Github Releases page linked above.</p>
@@ -383,6 +450,34 @@ Here's an example config file with some comments:</p>
 
 <p>You can also use the <code>--config &lt;file&gt;</code> flag to specify a different file.</p>
 <p><strong><a href="https://place1.github.io/openapi-linter/rules/">See Rules Docs</a></strong></p>
+<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
+<p>If you find this project useful please consider contributing back!</p>
+<p>If you have a new features (i.e. new rules) or you've encountered a bug
+that you'd like to fix then please create a GitHub issue 😃.</p>
+<h3 id="building-test">Building &amp; Test<a class="headerlink" href="#building-test" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><span class="c1"># Build</span>
+go build ./main.go
+
+<span class="c1"># Test</span>
+go <span class="nb">test</span> ./...
+
+<span class="c1"># Create release binaries</span>
+make
+
+<span class="c1"># Cleanup</span>
+make clean
+</pre></div>
+
+<h3 id="build-serve-docs">Build &amp; Serve Docs<a class="headerlink" href="#build-serve-docs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><span class="nb">cd</span> docs
+pip install -r requirements.txt
+
+<span class="c1"># Serve on localhost:8000 (for development)</span>
+mkdocs serve
+
+<span class="c1"># Build static docs site</span>
+mkdocs build
+</pre></div>
                 
                   
                 

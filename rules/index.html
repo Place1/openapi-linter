@@ -467,6 +467,46 @@ A value of <code>false</code> will require all paths to <strong>not</strong> end
 
 </div>
 </details>
+<details class="tip"><summary>noMissingRequiredProperties</summary><p>Disallows properties from being listed as "required" without
+being defined under "properties" of a schema.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">rules</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">noMissingRequiredProperties</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+
+</div>
+<div class="admonition success">
+<p class="admonition-title">Good</p>
+<div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">definitions</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">User</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">object</span>
+    <span class="l l-Scalar l-Scalar-Plain">required</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">username</span>
+    <span class="l l-Scalar l-Scalar-Plain">properties</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">id</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+      <span class="l l-Scalar l-Scalar-Plain">username</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+</pre></div>
+
+</div>
+<div class="admonition error">
+<p class="admonition-title">Bad</p>
+<div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">definitions</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">User</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">object</span>
+    <span class="l l-Scalar l-Scalar-Plain">required</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">username</span>
+    <span class="l l-Scalar l-Scalar-Plain">properties</span><span class="p p-Indicator">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">username</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+</pre></div>
+
+</div>
+</details>
                 
                   
                 
