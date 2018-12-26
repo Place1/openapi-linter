@@ -2,8 +2,6 @@ package linter
 
 import (
 	"fmt"
-	"path"
-	"strconv"
 	"strings"
 
 	"github.com/place1/openapi-linter/core"
@@ -31,15 +29,16 @@ func NoEmptyDescriptions(ctx *RuleContext) {
 		case *spec.Operation:
 			if node.Description == "" {
 				ctx.Report.AddViolation(RuleViolation{
-					RuleName: "",
-					Failure:  fmt.Sprintf(`operation "%v" must have a description`, data.Ref),
+					RuleName: "NoEmptyDescriptions",
+					Ref:      data.Ref,
+					Failure:  fmt.Sprintf(`operation "%v" must have a description`, node.ID),
 				})
 			}
 		}
 	})
 }
 
-func NoEmptyOperationID(ctx *RuleContext) {
+func NoEmptyOperationIDs(ctx *RuleContext) {
 	if ctx.Config.Rules.NoEmptyOperationIDs == false {
 		return
 	}
@@ -49,8 +48,9 @@ func NoEmptyOperationID(ctx *RuleContext) {
 		case *spec.Operation:
 			if node.ID == "" {
 				ctx.Report.AddViolation(RuleViolation{
-					RuleName: "",
-					Failure:  fmt.Sprintf(`operation "%v" must have an operationId`, data.Ref),
+					RuleName: "NoEmptyOperationIDs",
+					Ref:      data.Ref,
+					Failure:  "operation must have an operationId",
 				})
 			}
 		}
@@ -68,6 +68,7 @@ func SlashTerminatedPaths(ctx *RuleContext) {
 			if *ctx.Config.Rules.SlashTerminatedPaths && strings.HasSuffix(data.Key, "/") {
 				ctx.Report.AddViolation(RuleViolation{
 					RuleName: "",
+					Ref:      data.Ref,
 					Failure:  fmt.Sprintf(`path "%v" must end with a slash`, data.Ref),
 				})
 			}
@@ -114,6 +115,7 @@ func Naming(ctx *RuleContext) {
 					if segment != "" && !strings.HasPrefix(segment, "{") && !checker(segment) {
 						ctx.Report.AddViolation(RuleViolation{
 							RuleName: "Naming",
+							Ref:      data.Ref,
 							Failure:  fmt.Sprintf(`path "%v" must follow the %v naming convention`, data.Key, ctx.Config.Rules.Naming.Paths),
 						})
 					}
@@ -126,7 +128,8 @@ func Naming(ctx *RuleContext) {
 				for name := range *node {
 					if !checker(name) {
 						ctx.Report.AddViolation(RuleViolation{
-							RuleName: "",
+							RuleName: "Naming",
+							Ref:      data.Ref,
 							Failure:  fmt.Sprintf(`definition "%v" must follow the %v naming convention`, name, ctx.Config.Rules.Naming.Definitions),
 						})
 					}
@@ -139,7 +142,8 @@ func Naming(ctx *RuleContext) {
 				for name := range node.Properties {
 					if !checker(name) {
 						ctx.Report.AddViolation(RuleViolation{
-							RuleName: "Naming.Properties",
+							RuleName: "Naming",
+							Ref:      data.Ref,
 							Failure:  fmt.Sprintf(`property "%v" must follow the %v naming convention`, name, ctx.Config.Rules.Naming.Properties),
 						})
 					}
@@ -151,8 +155,9 @@ func Naming(ctx *RuleContext) {
 				checker := GetNamingChecker(ctx.Config.Rules.Naming.Parameters)
 				if !checker(node.Name) {
 					ctx.Report.AddViolation(RuleViolation{
-						RuleName: "",
-						Failure:  fmt.Sprintf(`parameter "%v" must follow the %v naming convention`, data.Ref, ctx.Config.Rules.Naming.Parameters),
+						RuleName: "Naming",
+						Ref:      data.Ref,
+						Failure:  fmt.Sprintf(`parameter "%v" must follow the %v naming convention`, node.Name, ctx.Config.Rules.Naming.Parameters),
 					})
 				}
 			}
@@ -162,19 +167,21 @@ func Naming(ctx *RuleContext) {
 				checker := GetNamingChecker(ctx.Config.Rules.Naming.Operations)
 				if !checker(node.ID) {
 					ctx.Report.AddViolation(RuleViolation{
-						RuleName: "",
-						Failure:  fmt.Sprintf(`operation with id "%v" must follow the %v naming convention`, node.ID, ctx.Config.Rules.Naming.Operations),
+						RuleName: "Naming",
+						Ref:      data.Ref,
+						Failure:  fmt.Sprintf(`operation "%v" must follow the %v naming convention`, node.ID, ctx.Config.Rules.Naming.Operations),
 					})
 				}
 			}
 
 			if ctx.Config.Rules.Naming.Tags != "" {
 				checker := GetNamingChecker(ctx.Config.Rules.Naming.Tags)
-				for i, tag := range node.Tags {
+				for _, tag := range node.Tags {
 					if !checker(tag) {
 						ctx.Report.AddViolation(RuleViolation{
-							RuleName: "",
-							Failure:  fmt.Sprintf(`operation tag "%v" must follow the %v naming convention`, path.Join(data.Ref, strconv.Itoa(i)), ctx.Config.Rules.Naming.Tags),
+							RuleName: "Naming",
+							Ref:      data.Ref,
+							Failure:  fmt.Sprintf(`operation tag "%v" must follow the %v naming convention`, tag, ctx.Config.Rules.Naming.Tags),
 						})
 					}
 				}
@@ -192,8 +199,9 @@ func RequireOperationTags(ctx *RuleContext) {
 		case *spec.Operation:
 			if len(node.Tags) == 0 {
 				ctx.Report.AddViolation(RuleViolation{
-					RuleName: "",
-					Failure:  fmt.Sprintf(`operation "%v" must have at least 1 tag`, data.Ref),
+					RuleName: "RequireOperationTags",
+					Ref:      data.Ref,
+					Failure:  fmt.Sprintf("operation \"%v\" must have at least 1 tag", node.ID),
 				})
 			}
 		}
@@ -224,6 +232,7 @@ func NoUnusedDefinitions(ctx *RuleContext) {
 			for name := range expected {
 				ctx.Report.AddViolation(RuleViolation{
 					RuleName: "NoUnusedDefinitions",
+					Ref:      data.Ref,
 					Failure:  fmt.Sprintf("definition %v is unused", name),
 				})
 			}
@@ -249,6 +258,7 @@ func NoDuplicateOperationIDs(ctx *RuleContext) {
 					// we've already seen it, it's a duplicate
 					ctx.Report.AddViolation(RuleViolation{
 						RuleName: "NoDuplicateOperationIDs",
+						Ref:      data.Ref,
 						Failure:  fmt.Sprintf("operation id \"%v\" is a duplicate", node.ID),
 					})
 				}
@@ -269,6 +279,7 @@ func NoMissingRequiredProperties(ctx *RuleContext) {
 				if _, ok := node.Properties[requiredProperty]; !ok {
 					ctx.Report.AddViolation(RuleViolation{
 						RuleName: "NoMissingRequiredProperties",
+						Ref:      data.Ref,
 						Failure:  fmt.Sprintf("property \"%v\" is listed as required but is not defined under \"properties\"", requiredProperty),
 					})
 				}

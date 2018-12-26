@@ -2,8 +2,8 @@ package core
 
 import (
 	"path"
+	"strconv"
 
-	"github.com/go-openapi/jsonpointer"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 )
@@ -24,7 +24,7 @@ func Walk(node interface{}, data NodeData, visitor DocumentVisitor) {
 
 	case *spec.Swagger:
 		for apiPath, pathItem := range v.Paths.Paths {
-			Walk(&pathItem, NodeData{Key: apiPath, Ref: path.Join("#/paths", jsonpointer.Escape(apiPath))}, visitor)
+			Walk(&pathItem, NodeData{Key: apiPath, Ref: path.Join("#/paths", apiPath)}, visitor)
 		}
 		Walk(&v.Definitions, NodeData{Ref: "#/definitions/"}, visitor)
 		for parameterName, parameter := range v.Parameters {
@@ -58,8 +58,8 @@ func Walk(node interface{}, data NodeData, visitor DocumentVisitor) {
 		}
 
 	case *spec.Operation:
-		for _, parameter := range v.Parameters {
-			Walk(&parameter, NodeData{}, visitor)
+		for i, parameter := range v.Parameters {
+			Walk(&parameter, NodeData{Ref: path.Join(data.Ref, "parameters", strconv.Itoa(i))}, visitor)
 		}
 		for statusCode, response := range v.Responses.StatusCodeResponses {
 			Walk(&response, NodeData{Key: string(statusCode)}, visitor)
@@ -72,7 +72,7 @@ func Walk(node interface{}, data NodeData, visitor DocumentVisitor) {
 
 	case *spec.Parameter:
 		if v.Schema != nil {
-			Walk(v.Schema, NodeData{}, visitor)
+			Walk(v.Schema, NodeData{Ref: data.Ref}, visitor)
 		}
 
 	case *spec.Definitions:

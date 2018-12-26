@@ -36,7 +36,7 @@ func RunSpecLint(options Options) {
 
 	Naming(ctx)
 	RequireOperationTags(ctx)
-	NoEmptyOperationID(ctx)
+	NoEmptyOperationIDs(ctx)
 	NoEmptyDescriptions(ctx)
 	SlashTerminatedPaths(ctx)
 	NoUnusedDefinitions(ctx)

@@ -6,6 +6,7 @@ import (
 
 type RuleViolation struct {
 	RuleName string
+	Ref      string
 	Failure  string
 }
 
