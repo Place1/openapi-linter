@@ -33,3 +33,40 @@ func IsSnakeCase(input string) bool {
 func IsKebabCase(input string) bool {
 	return kebabCaseRE.MatchString(input)
 }
+
+var indentMatcher = regexp.MustCompile(`(?m)^([^\S\n]*)`)
+
+func StripIndent(input string) string {
+	// trim leading new lines
+	input = strings.Trim(input, "\n")
+
+	// trim trailing lines and whitespace
+	input = strings.TrimRight(input, "\n\t ")
+
+	// match all indents
+	matches := indentMatcher.FindAllStringSubmatch(input, -1)
+	if matches == nil {
+		return input
+	}
+
+	// find the smallest indent size
+	minIndent := len(matches[1][0])
+	for _, match := range matches {
+		if len(match[0]) < minIndent {
+			minIndent = len(match[0])
+		}
+	}
+
+	// trim the smallest indent from all lines
+	output := []string{}
+	for _, line := range strings.Split(input, "\n") {
+		output = append(output, line[minIndent:])
+	}
+
+	return strings.Join(output, "\n")
+}
+
+func Yaml(input string) string {
+	input = StripIndent(input)
+	return strings.Replace(input, "\t", "  ", -1)
+}

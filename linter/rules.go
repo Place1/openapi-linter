@@ -111,9 +111,9 @@ func Naming(ctx *RuleContext) {
 				checker := GetNamingChecker(ctx.Config.Rules.Naming.Paths)
 				pathSegments := strings.Split(data.Key, "/")
 				for _, segment := range pathSegments {
-					if segment != "" && !checker(segment) {
+					if segment != "" && !strings.HasPrefix(segment, "{") && !checker(segment) {
 						ctx.Report.AddViolation(RuleViolation{
-							RuleName: "",
+							RuleName: "Naming",
 							Failure:  fmt.Sprintf(`path "%v" must follow the %v naming convention`, data.Key, ctx.Config.Rules.Naming.Paths),
 						})
 					}
