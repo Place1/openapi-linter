@@ -38,7 +38,7 @@ func CreateContext(custom TestContext) *RuleContext {
 	return &ctx
 }
 
-func TestCamelCaseNaming(t *testing.T) {
+func TestPascalCaseNaming(t *testing.T) {
 	require := require.New(t)
 	ctx := CreateContext(TestContext{
 		Spec: utils.Yaml(`
