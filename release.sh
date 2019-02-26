@@ -51,6 +51,6 @@ for ARTIFACT in "${ARTIFACTS[@]}"; do
 done
 
 echo "updating docs"
-(cd docs && mkdocs gh-deploy)
+(cd docs && pipenv run mkdocs gh-deploy)
 
 echo "done"
